@@ -100,9 +100,9 @@
 
 <script>
 // ==========================================
-// PEGA TU URL DE APPS SCRIPT AQUÍ ABAJO
+// ESTA ES TU URL REAL DE GOOGLE APPS SCRIPT
 // ==========================================
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwY_qDj4192Qx7CHwleMFz0ZiamNfH6UR31lE4dJ-8_zKpB-yTAFCOb0crxle_wA4lyyA/exec;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwY_qDj4192Qx7CHwleMFz0ZiamNfH6UR31lE4dJ-8_zKpB-yTAFCOb0crxle_wA4lyyA/exec";
 
 // Mensajes globales según el punto más débil de todo el público
 const MENSAJES_GLOBALES = {
@@ -120,8 +120,17 @@ function getTier(score) {
 }
 
 function fetchData() {
-  fetch(GAS_URL)
-    .then(response => response.json())
+  // Ajuste CRÍTICO: redirect 'follow' para evitar bloqueos de CORS
+  fetch(GAS_URL, {
+    method: 'GET',
+    redirect: 'follow'
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
       if(!data || data.count === 0) {
         document.getElementById('participant-count').textContent = "Esperando resultados del auditorio...";
@@ -137,7 +146,7 @@ function fetchData() {
       document.getElementById('participant-count').textContent = data.count + " radiografías generadas en vivo";
       
       const regions = ['craneo', 'columna', 'costillas', 'brazos', 'piernas'];
-      let minScore = 20; // Puntaje máximo posible por área
+      let minScore = 20; 
       let huesoDebil = 'craneo';
       
       regions.forEach(region => {
@@ -151,7 +160,7 @@ function fetchData() {
           el.classList.add(tier);
         });
         
-        // Encontrar el hueso más débil del grupo
+        // Encontrar el hueso más débil del grupo para el diagnóstico general
         if(score < minScore) {
           minScore = score;
           huesoDebil = region;
@@ -167,9 +176,13 @@ function fetchData() {
       document.getElementById('alerta-texto').textContent = MENSAJES_GLOBALES[huesoDebil];
       
     })
-    .catch(error => console.error('Error cargando datos:', error));
+    .catch(error => {
+      console.error('Error cargando datos:', error);
+      document.getElementById('participant-count').textContent = "Conectando con la base de datos...";
+    });
 }
 
+// Consultar cada 5 segundos
 setInterval(fetchData, 5000);
 fetchData();
 </script>
