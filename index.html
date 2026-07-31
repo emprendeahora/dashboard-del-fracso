@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Emprende Ahora</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  body {
+    background-color: #0e1e36;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .dashboard-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    width: 90%;
+    max-width: 1400px;
+  }
+  .data-panel { flex: 1; }
+  h1 { font-weight: 800; font-size: 3.5vw; margin: 0; line-height: 1.1; }
+  h1 em { color: #ffc107; font-style: normal; }
+  .big-number {
+    font-size: 14vw;
+    font-weight: 800;
+    color: #ff5d4e;
+    margin: 10px 0 0 0;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(255,93,78,0.4);
+  }
+  .subtitle { font-size: 1.2vw; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 4px; font-weight: 700; margin-top: 5px; }
+  
+  .skeleton-wrap { flex: 1; height: 90vh; display: flex; justify-content: flex-end; }
+  .skeleton-wrap svg { height: 100%; width: auto; }
+  
+  /* Huesos apagados por defecto */
+  .bone { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; stroke-linecap: round; transition: all 1.5s ease; }
+  .joint { fill: rgba(255,255,255,0.05); transition: all 1.5s ease; }
+  
+  /* Clases inyectadas por JS */
+  .sano { stroke: #1261d6 !important; fill: #1261d6; filter: drop-shadow(0 0 15px rgba(18,97,214,0.8)); }
+  .fisura { stroke: #ffc107 !important; fill: #ffc107; filter: drop-shadow(0 0 15px rgba(255,193,7,0.8)); }
+  .fractura { stroke: #ff5d4e !important; fill: #ff5d4e; filter: drop-shadow(0 0 20px rgba(255,93,78,0.9)); }
+</style>
+</head>
+<body>
+
+<div class="dashboard-container">
+  <div class="data-panel">
+    <h1>Estado del ecosistema<br><em>en tiempo real</em></h1>
+    <p class="subtitle">Auditorio Emprende Ahora</p>
+    
+    <div class="big-number" id="global-risk">--%</div>
+    <p class="subtitle">Probabilidad global de fracaso</p>
+    
+    <p style="margin-top: 50px; color: #4da3ff; font-weight: 700; font-size: 1.5vw;" id="participant-count">Conectando...</p>
+  </div>
+  
+  <div class="skeleton-wrap">
+    <svg viewBox="0 0 320 560" id="giant-skeleton">
+      <circle class="bone region-craneo" cx="160" cy="55" r="32"/>
+      <path class="bone region-craneo" d="M138,75 Q160,96 182,75"/>
+      <line class="bone region-craneo" x1="160" y1="87" x2="160" y2="108"/>
+      
+      <line class="bone region-columna" x1="160" y1="108" x2="160" y2="275" stroke-dasharray="9 7"/>
+      
+      <line class="bone region-brazos" x1="112" y1="118" x2="208" y2="118"/>
+      <circle class="joint region-brazos" cx="112" cy="118" r="6"/>
+      <circle class="joint region-brazos" cx="208" cy="118" r="6"/>
+      <line class="bone region-brazos" x1="112" y1="118" x2="90" y2="198"/>
+      <circle class="joint region-brazos" cx="90" cy="198" r="6"/>
+      <line class="bone region-brazos" x1="90" y1="198" x2="80" y2="276"/>
+      <circle class="joint region-brazos" cx="80" cy="276" r="6"/>
+      <line class="bone region-brazos" x1="208" y1="118" x2="230" y2="198"/>
+      <circle class="joint region-brazos" cx="230" cy="198" r="6"/>
+      <line class="bone region-brazos" x1="230" y1="198" x2="240" y2="276"/>
+      <circle class="joint region-brazos" cx="240" cy="276" r="6"/>
+      
+      <path class="bone region-costillas" d="M160,130 Q120,138 118,160 Q120,182 145,190"/>
+      <path class="bone region-costillas" d="M160,130 Q200,138 202,160 Q200,182 175,190"/>
+      <path class="bone region-costillas" d="M160,148 Q112,156 110,178 Q112,200 140,209"/>
+      <path class="bone region-costillas" d="M160,148 Q208,156 210,178 Q208,200 180,209"/>
+      <path class="bone region-costillas" d="M160,166 Q108,174 106,196 Q108,218 138,228"/>
+      <path class="bone region-costillas" d="M160,166 Q212,174 214,196 Q212,218 182,228"/>
+      
+      <path class="bone region-columna" d="M124,275 L196,275 L211,306 L109,306 Z"/>
+      
+      <line class="bone region-piernas" x1="140" y1="306" x2="130" y2="400"/>
+      <circle class="joint region-piernas" cx="130" cy="400" r="6"/>
+      <line class="bone region-piernas" x1="130" y1="400" x2="122" y2="498"/>
+      <circle class="joint region-piernas" cx="122" cy="498" r="6"/>
+      <line class="bone region-piernas" x1="180" y1="306" x2="190" y2="400"/>
+      <circle class="joint region-piernas" cx="190" cy="400" r="6"/>
+      <line class="bone region-piernas" x1="190" y1="400" x2="198" y2="498"/>
+      <circle class="joint region-piernas" cx="198" cy="498" r="6"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+// AQUÍ ESTÁ TU URL INSERTADA
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwY_qDj4192Qx7CHwleMFz0ZiamNfH6UR31lE4dJ-8_zKpB-yTAFCOb0crxle_wA4lyyA/exec";
+
+function getTier(score) {
+  if(score <= 6) return 'fractura';
+  if(score <= 10) return 'fisura';
+  return 'sano';
+}
+
+function fetchData() {
+  fetch(GAS_URL)
+    .then(response => response.json())
+    .then(data => {
+      if(!data || data.count === 0) {
+        document.getElementById('participant-count').textContent = "Esperando la primera radiografía...";
+        return;
+      }
+      
+      document.getElementById('global-risk').textContent = data.global + '%';
+      document.getElementById('participant-count').textContent = data.count + " radiografías generadas";
+      
+      const regions = ['craneo', 'columna', 'costillas', 'brazos', 'piernas'];
+      regions.forEach(region => {
+        const tier = getTier(data[region]);
+        const elements = document.querySelectorAll('.region-' + region);
+        elements.forEach(el => {
+          el.classList.remove('sano', 'fisura', 'fractura');
+          el.classList.add(tier);
+        });
+      });
+    })
+    .catch(error => console.error('Error cargando datos:', error));
+}
+
+setInterval(fetchData, 5000);
+fetchData();
+</script>
+</body>
+</html>
