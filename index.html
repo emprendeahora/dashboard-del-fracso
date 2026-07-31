@@ -7,46 +7,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   body {
-    background-color: #0e1e36;
-    color: white;
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    background-color: #0e1e36; color: white; font-family: 'Montserrat', sans-serif;
+    margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden;
   }
   .dashboard-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 50px;
-    width: 90%;
-    max-width: 1400px;
+    display: flex; align-items: center; justify-content: space-between; gap: 40px; width: 95%; max-width: 1500px;
   }
-  .data-panel { flex: 1; }
-  h1 { font-weight: 800; font-size: 3.5vw; margin: 0; line-height: 1.1; }
+  .data-panel { flex: 1.2; display: flex; flex-direction: column; gap: 30px; }
+  h1 { font-weight: 800; font-size: 3vw; margin: 0; line-height: 1.1; }
   h1 em { color: #ffc107; font-style: normal; }
-  .big-number {
-    font-size: 14vw;
-    font-weight: 800;
-    color: #ff5d4e;
-    margin: 10px 0 0 0;
-    line-height: 1;
-    text-shadow: 0 0 40px rgba(255,93,78,0.4);
-  }
-  .subtitle { font-size: 1.2vw; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 4px; font-weight: 700; margin-top: 5px; }
   
-  .skeleton-wrap { flex: 1; height: 90vh; display: flex; justify-content: flex-end; }
+  .big-number { font-size: 11vw; font-weight: 800; color: #ff5d4e; margin: 0; line-height: 1; text-shadow: 0 0 40px rgba(255,93,78,0.4); }
+  .subtitle { font-size: 1vw; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 4px; font-weight: 700; margin-top: 5px; }
+  
+  /* Panel de Diagnóstico Grupal */
+  .alerta-box { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 16px; border-left: 8px solid #ff5d4e; }
+  .alerta-box h3 { margin: 0 0 10px 0; color: #ff5d4e; font-size: 1.5vw; text-transform: uppercase; letter-spacing: 2px;}
+  .alerta-box p { margin: 0; font-size: 1.2vw; line-height: 1.5; color: #ddd; }
+  
+  .skeleton-wrap { flex: 0.8; height: 85vh; display: flex; justify-content: center; }
   .skeleton-wrap svg { height: 100%; width: auto; }
   
-  /* Huesos apagados por defecto */
-  .bone { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; stroke-linecap: round; transition: all 1.5s ease; }
-  .joint { fill: rgba(255,255,255,0.05); transition: all 1.5s ease; }
+  /* Huesos: Colores Semáforo */
+  .bone { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 8; stroke-linecap: round; transition: all 1s ease; }
+  .joint { fill: rgba(255,255,255,0.1); transition: all 1s ease; }
   
-  /* Clases inyectadas por JS */
-  .sano { stroke: #1261d6 !important; fill: #1261d6; filter: drop-shadow(0 0 15px rgba(18,97,214,0.8)); }
+  .sano { stroke: #4caf50 !important; fill: #4caf50; filter: drop-shadow(0 0 15px rgba(76,175,80,0.8)); }
   .fisura { stroke: #ffc107 !important; fill: #ffc107; filter: drop-shadow(0 0 15px rgba(255,193,7,0.8)); }
   .fractura { stroke: #ff5d4e !important; fill: #ff5d4e; filter: drop-shadow(0 0 20px rgba(255,93,78,0.9)); }
 </style>
@@ -55,13 +41,20 @@
 
 <div class="dashboard-container">
   <div class="data-panel">
-    <h1>Estado del ecosistema<br><em>en tiempo real</em></h1>
-    <p class="subtitle">Auditorio Emprende Ahora</p>
+    <div>
+      <h1>Estado del ecosistema<br><em>en tiempo real</em></h1>
+      <p class="subtitle" style="margin-bottom: 20px;">Auditorio Emprende Ahora</p>
+      
+      <div class="big-number" id="global-risk">--%</div>
+      <p class="subtitle">Probabilidad global de fracaso</p>
+    </div>
     
-    <div class="big-number" id="global-risk">--%</div>
-    <p class="subtitle">Probabilidad global de fracaso</p>
-    
-    <p style="margin-top: 50px; color: #4da3ff; font-weight: 700; font-size: 1.5vw;" id="participant-count">Conectando...</p>
+    <div class="alerta-box" id="alerta-box" style="display:none;">
+      <h3>Diagnóstico del Auditorio</h3>
+      <p id="alerta-texto">Calculando el punto más crítico del grupo...</p>
+    </div>
+
+    <p style="color: #4da3ff; font-weight: 700; font-size: 1.2vw;" id="participant-count">Conectando...</p>
   </div>
   
   <div class="skeleton-wrap">
@@ -106,8 +99,19 @@
 </div>
 
 <script>
-// AQUÍ ESTÁ TU URL INSERTADA
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwY_qDj4192Qx7CHwleMFz0ZiamNfH6UR31lE4dJ-8_zKpB-yTAFCOb0crxle_wA4lyyA/exec";
+// ==========================================
+// PEGA TU URL DE APPS SCRIPT AQUÍ ABAJO
+// ==========================================
+const GAS_URL = "https://script.google.com/macros/s/TU_URL_DE_APPS_SCRIPT_AQUI/exec";
+
+// Mensajes globales según el punto más débil de todo el público
+const MENSAJES_GLOBALES = {
+  craneo: "El grupo en general está desconectado de su cliente. La mayoría está vendiendo lo que quiere vender, en lugar de escuchar lo que el mercado realmente necesita.",
+  columna: "El auditorio está operando a ciegas. La mayor debilidad grupal es que no están analizando a la competencia ni entendiendo cómo funciona su sector.",
+  costillas: "¡Alerta financiera! El mayor problema del grupo es el desorden con la plata. Es urgente que todos comiencen a separar las cuentas personales de las del negocio.",
+  brazos: "El auditorio sufre de 'todismo'. La mayoría está haciendo todo en sus negocios y les cuesta muchísimo delegar labores operativas a otros.",
+  piernas: "Falta de validación. El error más común en la sala es que están gastando plata y esfuerzo en ideas sin haber probado primero si hay gente dispuesta a comprarlas."
+};
 
 function getTier(score) {
   if(score <= 6) return 'fractura';
@@ -120,22 +124,48 @@ function fetchData() {
     .then(response => response.json())
     .then(data => {
       if(!data || data.count === 0) {
-        document.getElementById('participant-count').textContent = "Esperando la primera radiografía...";
+        document.getElementById('participant-count').textContent = "Esperando resultados del auditorio...";
         return;
       }
       
-      document.getElementById('global-risk').textContent = data.global + '%';
-      document.getElementById('participant-count').textContent = data.count + " radiografías generadas";
+      const numRisk = document.getElementById('global-risk');
+      numRisk.textContent = data.global + '%';
+      
+      // Color del número global
+      numRisk.style.color = data.global >= 50 ? '#ff5d4e' : (data.global >= 30 ? '#ffc107' : '#4caf50');
+      
+      document.getElementById('participant-count').textContent = data.count + " radiografías generadas en vivo";
       
       const regions = ['craneo', 'columna', 'costillas', 'brazos', 'piernas'];
+      let minScore = 20; // Puntaje máximo posible por área
+      let huesoDebil = 'craneo';
+      
       regions.forEach(region => {
-        const tier = getTier(data[region]);
+        let score = data[region];
+        
+        // Colorear Esqueleto
+        const tier = getTier(score);
         const elements = document.querySelectorAll('.region-' + region);
         elements.forEach(el => {
           el.classList.remove('sano', 'fisura', 'fractura');
           el.classList.add(tier);
         });
+        
+        // Encontrar el hueso más débil del grupo
+        if(score < minScore) {
+          minScore = score;
+          huesoDebil = region;
+        }
       });
+      
+      // Mostrar el Diagnóstico Grupal
+      const cajaAlerta = document.getElementById('alerta-box');
+      cajaAlerta.style.display = 'block';
+      
+      // Cambiar color del borde de alerta según qué tan grave sea el punto débil
+      cajaAlerta.style.borderLeftColor = minScore <= 6 ? '#ff5d4e' : (minScore <= 10 ? '#ffc107' : '#4caf50');
+      document.getElementById('alerta-texto').textContent = MENSAJES_GLOBALES[huesoDebil];
+      
     })
     .catch(error => console.error('Error cargando datos:', error));
 }
